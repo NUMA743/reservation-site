@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>かんたん予約</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+    input, select, button { margin: 10px; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>かんたん予約フォーム</h1>
+
+  <label>お名前: <input type="text" id="name"></label><br>
+  <label>日付: <input type="date" id="date"></label><br>
+  <label>時間: <input type="time" id="time"></label><br>
+
+  <button id="reserveBtn">予約する</button>
+
+  <p id="msg"></p>
+
+  <script>
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwwPjVFPoa02e9dYndoHceFPGMtPQJKHdOFjdpvYLZORLMrOIT4zUj6WrLzSgJa_8u0/exec';
+
+    document.getElementById("reserveBtn").addEventListener("click", () => {
+      const name = document.getElementById("name").value;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+
+      if (!name || !date || !time) {
+        alert("すべての項目を入力してください");
+        return;
+      }
+
+      const params = new URLSearchParams();
+      params.append("name", name);
+      params.append("menu", "かんたん予約"); // 固定値
+      params.append("date", date);
+      params.append("time", time);
+
+      fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.result === "success") {
+          document.getElementById("msg").textContent = "予約が完了しました！";
+        } else {
+          document.getElementById("msg").textContent = "予約に失敗しました。";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("msg").textContent = "エラーが発生しました";
+      });
+    });
+  </script>
+</body>
+</html>
